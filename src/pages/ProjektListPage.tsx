@@ -1,9 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Search, Briefcase } from 'lucide-react'
+import { Search, Briefcase, ChevronDown } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useNav } from '../lib/navigation'
 import type { Farg, Kund, Projekt, ProjektStatusar } from '../lib/types'
-import { FARG_DOT } from '../lib/types'
 import { ListRow } from '../components/ListRow'
 import { Loading } from '../components/Loading'
 import { EmptyState } from '../components/EmptyState'
@@ -66,48 +65,31 @@ export function ProjektListPage() {
 
   return (
     <div className="flex flex-col">
-      <div className="sticky top-0 z-10 bg-bg/95 backdrop-blur border-b border-border">
-        <div className="px-3 pt-2 pb-2">
-          <label className="relative block">
-            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-subtle pointer-events-none" />
-            <input
-              className="input pl-9"
-              type="search"
-              placeholder="Sök projekt…"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-          </label>
-        </div>
+      <div className="px-3 py-2 flex gap-2 sticky top-0 z-10 bg-bg/95 backdrop-blur border-b border-border">
+        <label className="relative flex-1">
+          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-subtle pointer-events-none" />
+          <input
+            className="input pl-9 w-full"
+            type="search"
+            placeholder="Sök projekt…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </label>
 
         {statusar.length > 0 && (
-          <div className="flex gap-2 px-3 pb-2 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
-            <button
-              type="button"
-              onClick={() => setStatusFilter(null)}
-              className={`shrink-0 px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-                statusFilter === null
-                  ? 'bg-elevated text-fg'
-                  : 'text-muted active:bg-hover'
-              }`}
+          <div className="relative shrink-0">
+            <select
+              className="input pr-8 appearance-none cursor-pointer"
+              value={statusFilter ?? ''}
+              onChange={(e) => setStatusFilter(e.target.value || null)}
             >
-              Alla
-            </button>
-            {statusar.map((s) => (
-              <button
-                key={s.id}
-                type="button"
-                onClick={() => setStatusFilter(statusFilter === s.namn ? null : s.namn)}
-                className={`shrink-0 flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-                  statusFilter === s.namn
-                    ? 'bg-elevated text-fg'
-                    : 'text-muted active:bg-hover'
-                }`}
-              >
-                <span className={`w-2 h-2 rounded-full ${FARG_DOT[s.farg]}`} />
-                {s.namn}
-              </button>
-            ))}
+              <option value="">Alla</option>
+              {statusar.map((s) => (
+                <option key={s.id} value={s.namn}>{s.namn}</option>
+              ))}
+            </select>
+            <ChevronDown size={14} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-subtle pointer-events-none" />
           </div>
         )}
       </div>
